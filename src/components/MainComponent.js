@@ -1,43 +1,73 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Menu from './MenuComponent';
-import DishDetail from './DishDetailComponent';
+import About from './AboutComponent';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
+import Contact from './ContactComponent';
 import { DISHES } from '../shared/dishes';
+import { PROMOTIONS } from '../shared/promotions';
+import { LEADERS } from '../shared/leaders';
+import { COMMENTS } from '../shared/comments';
 import Home from './HomeComponent';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import DishDetail from './DishDetailComponent';
 
 class Main extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             dishes: DISHES,
+            comments: COMMENTS,
+            promotions: PROMOTIONS,
+            leaders: LEADERS,
             selectedDish: null
         }
     }
 
     onDishSelect(dishId) {
-        this.setState({selectedDish: dishId});
+        this.setState({ selectedDish: dishId });
     }
 
     render() {
         const HomePage = () => {
             return (
-                <Home />
+                <Home
+                    dish={this.state.dishes.filter((dish) => dish.featured)[0]}
+                    promotion={this.state.promotions.filter((promo) => promo.featured)[0]}
+                    leader={this.state.leaders.filter((leader) => leader.featured)[0]}
+                />
             );
         }
-        return(
+
+        const DishWithId = ({ match }) => {
+            return (
+                <DishDetail dish={this.state.dishes.filter((dish) => dish.id === parseInt(match.params.dishId, 10))[0]}
+                    comments={this.state.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId, 10))[0]}
+                />
+            );
+        };
+
+        return (
             <div className="container">
-                <Header/>
+                <Header />
                 <Switch>
                     <Route path='/home' component={HomePage} />
+                    {
+                        /*
+                        Task 1.2: The React application has been appropriately updated to enable navigation to 
+                        the About Us page of our application.
+                        */
+                    }
+                    <Route path='/aboutus' component={() => <About leaders={this.state.leaders} />} />
                     <Route exact path='/menu' component={() => <Menu dishes={this.state.dishes} />} />
-                    <Redirect to="/home"/>
+                    <Route path='/menu/:dishId' component={DishWithId} />
+                    <Route exact path='/contactus' component={Contact} />
+                    <Redirect to="/home" />
                 </Switch>
-                <Footer/>
+                <Footer />
             </div>
-            
+
         );
     }
 
