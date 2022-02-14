@@ -27,7 +27,7 @@ class Contact extends Component {
         this.handleBlur = this.handleBlur.bind(this);
     }
 
-    handleBlur = (field)  => {
+    handleBlur = (field) => (evt) => {
         this.setState({
             touched: { ...this.state.touched, [field]: true }
         });
