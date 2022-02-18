@@ -3,6 +3,7 @@ import { Card, CardImg, CardBody, CardTitle, CardText, Breadcrumb, BreadcrumbIte
 import { Link } from 'react-router-dom';
 import { Button, Label, Modal, ModalBody, ModalHeader, Row, Col } from "reactstrap";
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 function RenderDish({ dish }) {
     return (
@@ -14,10 +15,9 @@ function RenderDish({ dish }) {
             </CardBody>
         </Card>
     );
-
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, dishId }) {
     if (comments != null) {
         const commentsval = comments.map((comment) => {
             return (
@@ -42,9 +42,9 @@ function RenderComments({ comments }) {
                     RenderComments function to display the button for toggling the modal.
                     */
                 }
-                <CommentForm />
+                <CommentForm dishId={dishId} addComment={addComment} />
             </div>
-            
+
         );
     } else {
         return (
@@ -54,6 +54,23 @@ function RenderComments({ comments }) {
 }
 
 const DishDetail = (props) => {
+    if (props.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
+    } else if (props.errMess) {
+        return(
+            <div className="container">
+                <div className="row">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        );
+    } else if (props.dish != null )
     return (
         <div className="container">
             <div className="row">
@@ -71,7 +88,10 @@ const DishDetail = (props) => {
                     <RenderDish dish={props.dish} />
                 </div>
                 <div className="col-12 col-md-5 m-1">
-                    <RenderComments comments={props.comments} />
+                    <RenderComments comments={props.comments}
+                        addComment={props.addComment}
+                        dishId={props.dish.id}
+                    />
                 </div>
             </div>
         </div>
@@ -105,8 +125,7 @@ class CommentForm extends Component {
 
     handleSubmit(values) {
         this.toggleModal()
-        console.log('Current State is: ' + JSON.stringify(values));
-        alert('Current State is: ' + JSON.stringify(values));
+        this.props.addComment(this.props.dishId, values.userrating, values.name, values.comment);
     }
     render() {
         return (
@@ -134,13 +153,13 @@ class CommentForm extends Component {
                                 <Label htmlFor="rating" md={12}>Rating</Label>
                                 <Col md={12}>
                                     <Control.select model=".userrating" id="rating" name="rating"
-                                        className="form-control"
+                                        className="form-control" defaultValue="5"
                                     >
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
-                                        <option value="5" selected>5</option>
+                                        <option value="5">5</option>
                                     </Control.select>
 
                                 </Col>
