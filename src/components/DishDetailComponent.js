@@ -18,7 +18,7 @@ function RenderDish({ dish }) {
     );
 }
 
-function RenderComments({ comments, addComment, dishId }) {
+function RenderComments({ comments, postComment, dishId }) {
     if (comments != null) {
         const commentsval = comments.map((comment) => {
             return (
@@ -43,7 +43,7 @@ function RenderComments({ comments, addComment, dishId }) {
                     RenderComments function to display the button for toggling the modal.
                     */
                 }
-                <CommentForm dishId={dishId} addComment={addComment} />
+                <CommentForm dishId={dishId} postComment={postComment} />
             </div>
 
         );
@@ -90,7 +90,7 @@ const DishDetail = (props) => {
                     </div>
                     <div className="col-12 col-md-5 m-1">
                         <RenderComments comments={props.comments}
-                            addComment={props.addComment}
+                            postComment={props.postComment}
                             dishId={props.dish.id}
                         />
                     </div>
@@ -126,7 +126,7 @@ class CommentForm extends Component {
 
     handleSubmit(values) {
         this.toggleModal()
-        this.props.addComment(this.props.dishId, values.userrating, values.name, values.comment);
+        this.props.postComment(this.props.dishId, parseInt(values.userrating, 10), values.name, values.comment);
     }
     render() {
         return (
