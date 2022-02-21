@@ -5,16 +5,22 @@ import { Button, Label, Modal, ModalBody, ModalHeader, Row, Col } from "reactstr
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseURL } from '../shared/configs';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
 function RenderDish({ dish }) {
     return (
-        <Card>
-            <CardImg top src={baseURL + dish.image} alt={dish.name} />
-            <CardBody>
-                <CardTitle>{dish.name}</CardTitle>
-                <CardText>{dish.description}</CardText>
-            </CardBody>
-        </Card>
+        <FadeTransform in transformProps={{
+            exitTransform: 'scale(0.5) translateY(-50%)'
+        }}>
+            <Card>
+                <CardImg top src={baseURL + dish.image} alt={dish.name} />
+                <CardBody>
+                    <CardTitle>{dish.name}</CardTitle>
+                    <CardText>{dish.description}</CardText>
+                </CardBody>
+            </Card>
+        </FadeTransform>
+
     );
 }
 
@@ -22,21 +28,27 @@ function RenderComments({ comments, postComment, dishId }) {
     if (comments != null) {
         const commentsval = comments.map((comment) => {
             return (
-                <li key={comment.id}>
-                    <p>{comment.comment}</p>
-                    <p className="blockquote-footer">{comment.author}, {new Intl.DateTimeFormat('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: '2-digit'
-                    }).format(new Date(Date.parse(comment.date)))}</p>
-                </li>
+                <Fade in>
+                    <li key={comment.id}>
+                        <p>{comment.comment}</p>
+                        <p className="blockquote-footer">{comment.author}, {new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit'
+                        }).format(new Date(Date.parse(comment.date)))}</p>
+                    </li>
+                </Fade>
+
             );
         });
         return (
             <div>
                 <h4>Comments</h4>
                 <ul className="list-unstyled">
-                    {commentsval}
+                    <Stagger in>
+                        {commentsval}
+                    </Stagger>
+
                 </ul>
                 {
                     /* Task 1.3: The CommentForm component is used by the 
