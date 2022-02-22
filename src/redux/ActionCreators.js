@@ -145,3 +145,80 @@ export const promosFailed = (errmess) => ({
     type: ActionTypes.PROMOS_FAILED,
     payload: errmess
 });
+
+export const leadersLoading = () => ({
+    type: ActionTypes.LEADERS_LOADING
+});
+
+export const fetchLeaders = () => (dispatch) => {
+    dispatch(leadersLoading());
+
+    return fetch(baseURL + 'leaders')
+    .then (response => {
+        if (response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        var errmess = new Error(error.message);
+        throw errmess;
+    })
+    .then(response => response.json())
+    .then(promos => dispatch(addLeaders(promos)))
+    .catch(error => dispatch(leadersFailed(error.message)));
+};
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
+});
+
+export const leadersFailed = (errmess) => ({
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmess
+});
+
+export const showFeedback = (feedback) => ({
+    type: ActionTypes.SUBMIT_FEEDBACK,
+    payload: feedback
+});
+
+export const postFeedback = (feedback) => (dispatch) => {
+    const feedbackval = {...feedback, date: new Date()};
+
+    return fetch(baseURL + 'feedback', {
+        method: 'POST',
+        body: JSON.stringify(feedbackval),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        throw error;
+    }
+    )
+    .then(response => response.json())
+    .then(response => dispatch(showFeedback(response)))
+    .then(response => {
+        console.log('Thanks! for your feedback: '+ response);
+        alert('Thank you for your feedback! \n' + JSON.stringify(response.payload));
+    })
+    .catch(error => {
+        console.log('Submit Feedback', error.message);
+        alert('Your Feedback could not be posted\nError: ' + error.message);
+    });
+}
