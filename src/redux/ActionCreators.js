@@ -146,6 +146,8 @@ export const promosFailed = (errmess) => ({
     payload: errmess
 });
 
+/* Assignement 4 */
+
 export const leadersLoading = () => ({
     type: ActionTypes.LEADERS_LOADING
 });
